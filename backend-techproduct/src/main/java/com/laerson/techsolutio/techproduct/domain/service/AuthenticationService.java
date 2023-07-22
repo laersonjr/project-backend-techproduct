@@ -1,6 +1,7 @@
 package com.laerson.techsolutio.techproduct.domain.service;
 
 import com.laerson.techsolutio.techproduct.api.dto.UserAuthentication;
+import com.laerson.techsolutio.techproduct.api.dto.response.TokenResponseBody;
 import com.laerson.techsolutio.techproduct.core.security.interfaces.ITokenProvide;
 import com.laerson.techsolutio.techproduct.domain.entity.User;
 import com.laerson.techsolutio.techproduct.domain.exception.IncorrectPasswordException;
@@ -9,6 +10,8 @@ import com.laerson.techsolutio.techproduct.domain.repository.UserRepository;
 import com.laerson.techsolutio.techproduct.domain.service.interfaces.IAuthenticationService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Date;
 
 @Service
 public class AuthenticationService implements IAuthenticationService {
@@ -25,7 +28,7 @@ public class AuthenticationService implements IAuthenticationService {
 
 
     @Override
-    public String authenticateUser(UserAuthentication login) {
+    public TokenResponseBody authenticateUser(UserAuthentication login) {
         User userFound = userRepository.findByName(login.getName());
 
         if (validateUserExists(userFound)) {
@@ -38,8 +41,11 @@ public class AuthenticationService implements IAuthenticationService {
         }
 
         String token = iTokenProvide.generateToken(login.getName());
+        int expiresIn = iTokenProvide.getJwtExpirationMs();
+        Date expirationDate = iTokenProvide.getExpiryDateFromToken(token);
 
-        return token;
+
+        return new TokenResponseBody(token, expiresIn, expirationDate);
     }
 
     private boolean validateUserExists(User userFound) {

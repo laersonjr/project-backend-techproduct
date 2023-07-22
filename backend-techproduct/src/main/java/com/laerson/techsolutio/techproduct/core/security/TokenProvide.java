@@ -17,9 +17,9 @@ import java.util.UUID;
 @Component
 public class TokenProvide implements ITokenProvide {
 
-    SecretKey key = Keys.secretKeyFor(SignatureAlgorithm.HS512);
-    String jwtSecret = Encoders.BASE64.encode(key.getEncoded());
-    int jwtExpirationMs = 7200000;
+    private SecretKey key = Keys.secretKeyFor(SignatureAlgorithm.HS512);
+    private String jwtSecret = Encoders.BASE64.encode(key.getEncoded());
+    private final int jwtExpirationMs = 7200000;
 
     @Override
     public String generateToken(String name) {
@@ -51,5 +51,18 @@ public class TokenProvide implements ITokenProvide {
                 .parseClaimsJws(token)
                 .getBody();
         return claims.getSubject();
+    }
+
+    @Override
+    public Date getExpiryDateFromToken(String token) {
+        Claims claims = Jwts.parser()
+                .setSigningKey(jwtSecret)
+                .parseClaimsJws(token)
+                .getBody();
+        return claims.getExpiration();
+    }
+
+    public int getJwtExpirationMs() {
+        return jwtExpirationMs;
     }
 }

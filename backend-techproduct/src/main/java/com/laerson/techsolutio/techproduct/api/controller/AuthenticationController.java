@@ -1,6 +1,7 @@
 package com.laerson.techsolutio.techproduct.api.controller;
 
 import com.laerson.techsolutio.techproduct.api.dto.UserAuthentication;
+import com.laerson.techsolutio.techproduct.api.dto.response.TokenResponseBody;
 import com.laerson.techsolutio.techproduct.domain.service.interfaces.IAuthenticationService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,7 +20,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> authenticateUser(@RequestBody UserAuthentication login) {
+    public ResponseEntity<TokenResponseBody> authenticateUser(@RequestBody UserAuthentication login) {
         return ResponseEntity.ok(iAuthenticationService.authenticateUser(login));
     }
 
