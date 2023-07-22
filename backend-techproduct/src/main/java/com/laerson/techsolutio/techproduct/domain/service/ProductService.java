@@ -24,7 +24,7 @@ public class ProductService implements IProductService {
     @Override
     public ProductResponseBody createProduct(ProductRequestBody productRequestBody) {
         Product newProduct = dtoConverter.convertToEntity(productRequestBody, Product.class);
-        newProduct.setId(UUID.randomUUID());
+        newProduct.setRandomId();
         productRepository.save(newProduct);
         ProductResponseBody productCreated = dtoConverter.convertToModelDTO(newProduct, ProductResponseBody.class);
         return productCreated;

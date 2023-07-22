@@ -28,4 +28,8 @@ public class Product {
     @NotNull
     private BigDecimal value;
 
+    public void setRandomId() {
+        this.id = UUID.randomUUID();
+    }
+
 }

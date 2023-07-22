@@ -25,7 +25,7 @@ public class UserService implements IUserService {
     @Override
     public UserResponseBody createUser(UserRequestBody userRequestBody) {
         User newUser = dtoConverter.convertToEntity(userRequestBody, User.class);
-        newUser.setId(UUID.randomUUID());
+        newUser.setRandomId();
         userRepository.save(newUser);
         UserResponseBody createdUser = dtoConverter.convertToModelDTO(newUser, UserResponseBody.class);
         return createdUser;

@@ -23,4 +23,8 @@ public class User {
     @NotBlank
     private String password;
 
+    public void setRandomId() {
+        this.id = UUID.randomUUID();
+    }
+
 }
