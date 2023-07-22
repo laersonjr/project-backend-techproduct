@@ -6,19 +6,20 @@ import com.laerson.techsolutio.techproduct.core.modelmapper.interfaces.IModelMap
 import com.laerson.techsolutio.techproduct.domain.entity.User;
 import com.laerson.techsolutio.techproduct.domain.repository.UserRepository;
 import com.laerson.techsolutio.techproduct.domain.service.interfaces.IUserService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.UUID;
 
 @Service
 public class UserService implements IUserService {
 
     private final UserRepository userRepository;
     private final IModelMapperDTOConverter dtoConverter;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository, IModelMapperDTOConverter dtoConverter) {
+    public UserService(UserRepository userRepository, IModelMapperDTOConverter dtoConverter, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.dtoConverter = dtoConverter;
+        this.passwordEncoder = passwordEncoder;
     }
 
 
@@ -26,6 +27,7 @@ public class UserService implements IUserService {
     public UserResponseBody createUser(UserRequestBody userRequestBody) {
         User newUser = dtoConverter.convertToEntity(userRequestBody, User.class);
         newUser.setRandomId();
+        newUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
         userRepository.save(newUser);
         UserResponseBody createdUser = dtoConverter.convertToModelDTO(newUser, UserResponseBody.class);
         return createdUser;
