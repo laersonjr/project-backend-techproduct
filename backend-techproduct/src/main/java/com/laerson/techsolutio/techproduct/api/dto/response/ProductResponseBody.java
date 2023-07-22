@@ -3,14 +3,16 @@ package com.laerson.techsolutio.techproduct.api.dto.response;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.UUID;
+import java.math.BigDecimal;
 
 @Getter
 @Setter
-public class UserResponseBody {
-
-    private UUID id;
+public class ProductResponseBody {
 
     private String name;
+
+    private String supplier;
+
+    private BigDecimal value;
 
 }

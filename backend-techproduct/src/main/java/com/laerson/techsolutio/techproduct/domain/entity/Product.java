@@ -14,13 +14,17 @@ import java.util.UUID;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity(name = "tb_product")
 public class Product {
+
     @EqualsAndHashCode.Include
     @Id
     private UUID id;
+
     @NotBlank
     private String name;
+
     @NotBlank
     private String supplier;
+
     @NotNull
     private BigDecimal value;
 
