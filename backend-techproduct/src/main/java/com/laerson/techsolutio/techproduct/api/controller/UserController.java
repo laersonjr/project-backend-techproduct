@@ -1,5 +1,7 @@
 package com.laerson.techsolutio.techproduct.api.controller;
 
+import com.laerson.techsolutio.techproduct.api.dto.request.UserRequestBody;
+import com.laerson.techsolutio.techproduct.api.dto.response.UserResponseBody;
 import com.laerson.techsolutio.techproduct.domain.entity.User;
 import com.laerson.techsolutio.techproduct.domain.service.interfaces.IUserService;
 import jakarta.validation.Valid;
@@ -22,8 +24,8 @@ public class UserController {
 
 
     @PostMapping("/create")
-    public ResponseEntity<User> createUser(@Valid @RequestBody User user){
-        return ResponseEntity.status(HttpStatus.CREATED).body(iUserService.createUser(user));
+    public ResponseEntity<UserResponseBody> createUser(@Valid @RequestBody UserRequestBody userRequestBody){
+        return ResponseEntity.status(HttpStatus.CREATED).body(iUserService.createUser(userRequestBody));
     }
 
 }
