@@ -1,6 +1,10 @@
 package com.laerson.techsolutio.techproduct.api.exceptionhandler;
 
+import com.laerson.techsolutio.techproduct.core.security.exception.TokenInvalidException;
+import com.laerson.techsolutio.techproduct.core.security.exception.TokenNotFoundException;
+import com.laerson.techsolutio.techproduct.domain.exception.IncorrectPasswordException;
 import com.laerson.techsolutio.techproduct.domain.exception.ProductNotFoundException;
+import com.laerson.techsolutio.techproduct.domain.exception.UserNotFoundException;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpHeaders;
@@ -38,6 +42,34 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(ProductNotFoundException.class)
     private ResponseEntity<Object> handleProductNotFoundException(ProductNotFoundException ex, WebRequest request){
         HttpStatus status = HttpStatus.NOT_FOUND;
+        ErrorDetails errorDetails = getErrorDetail(status, ex.getMessage());
+        return handleExceptionInternal(ex, errorDetails, new HttpHeaders(), status, request);
+    }
+
+    @ExceptionHandler(IncorrectPasswordException.class)
+    private ResponseEntity<Object> handleIncorrectPasswordException(IncorrectPasswordException ex, WebRequest request){
+        HttpStatus status = HttpStatus.UNAUTHORIZED;
+        ErrorDetails errorDetails = getErrorDetail(status, ex.getMessage());
+        return handleExceptionInternal(ex, errorDetails, new HttpHeaders(), status, request);
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    private ResponseEntity<Object> handleUserNotFoundException(UserNotFoundException ex, WebRequest request){
+        HttpStatus status = HttpStatus.NOT_FOUND;
+        ErrorDetails errorDetails = getErrorDetail(status, ex.getMessage());
+        return handleExceptionInternal(ex, errorDetails, new HttpHeaders(), status, request);
+    }
+
+    @ExceptionHandler(TokenNotFoundException.class)
+    private ResponseEntity<Object> handleTokenNotFoundException(TokenNotFoundException ex, WebRequest request){
+        HttpStatus status = HttpStatus.UNAUTHORIZED;
+        ErrorDetails errorDetails = getErrorDetail(status, ex.getMessage());
+        return handleExceptionInternal(ex, errorDetails, new HttpHeaders(), status, request);
+    }
+
+    @ExceptionHandler(TokenInvalidException.class)
+    private ResponseEntity<Object> handleTokenInvalidException(TokenInvalidException ex, WebRequest request){
+        HttpStatus status = HttpStatus.UNAUTHORIZED;
         ErrorDetails errorDetails = getErrorDetail(status, ex.getMessage());
         return handleExceptionInternal(ex, errorDetails, new HttpHeaders(), status, request);
     }

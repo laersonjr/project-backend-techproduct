@@ -2,12 +2,14 @@ package com.laerson.techsolutio.techproduct.domain.service;
 
 import com.laerson.techsolutio.techproduct.api.dto.UserAuthentication;
 import com.laerson.techsolutio.techproduct.api.dto.response.TokenResponseBody;
+import com.laerson.techsolutio.techproduct.core.security.exception.TokenNotFoundException;
 import com.laerson.techsolutio.techproduct.core.security.interfaces.ITokenProvide;
 import com.laerson.techsolutio.techproduct.domain.entity.User;
 import com.laerson.techsolutio.techproduct.domain.exception.IncorrectPasswordException;
 import com.laerson.techsolutio.techproduct.domain.exception.UserNotFoundException;
 import com.laerson.techsolutio.techproduct.domain.repository.UserRepository;
 import com.laerson.techsolutio.techproduct.domain.service.interfaces.IAuthenticationService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -48,8 +50,23 @@ public class AuthenticationService implements IAuthenticationService {
         return new TokenResponseBody(token, expiresIn, expirationDate);
     }
 
+    @Override
+    public boolean validadTokenByRequest(HttpServletRequest request) {
+        return iTokenProvide.validateToken(getTokenByRequest(request));
+    }
+
     private boolean validateUserExists(User userFound) {
         return userFound == null;
+    }
+
+    private String getTokenByRequest(HttpServletRequest request) {
+        String header = request.getHeader("Authorization");
+        if (header == null || !header.startsWith("Bearer ")) {
+            throw new TokenNotFoundException();
+        }
+        String token = header.split(" ")[1];
+        iTokenProvide.validateToken(token);
+        return token;
     }
 
 }

@@ -3,6 +3,7 @@ package com.laerson.techsolutio.techproduct.api.controller;
 import com.laerson.techsolutio.techproduct.api.dto.request.ProductRequestBody;
 import com.laerson.techsolutio.techproduct.api.dto.response.ProductResponseBody;
 import com.laerson.techsolutio.techproduct.domain.service.interfaces.IProductService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -24,8 +25,10 @@ public class ProductController {
     }
 
     @PostMapping
-    public ResponseEntity<ProductResponseBody> createProduct(@Valid @RequestBody ProductRequestBody productRequestBody) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(iProductService.createProduct(productRequestBody));
+    public ResponseEntity<ProductResponseBody> createProduct(@Valid @RequestBody ProductRequestBody productRequestBody,
+                                                             HttpServletRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(iProductService.createProduct(productRequestBody, request));
     }
 
     @GetMapping
@@ -33,28 +36,32 @@ public class ProductController {
             @RequestParam(value = "page", defaultValue = "0") Integer page,
             @RequestParam(value = "linesPerPage", defaultValue = "12") Integer linesPerPage,
             @RequestParam(value = "direction", defaultValue = "ASC") String direction,
-            @RequestParam(value = "orderBy", defaultValue = "name") String orderBy) {
+            @RequestParam(value = "orderBy", defaultValue = "name") String orderBy,
+            HttpServletRequest request) {
 
         PageRequest pageRequest = PageRequest.of(page, linesPerPage, Sort.Direction.valueOf(direction), orderBy);
-        Page<ProductResponseBody> productsPage = iProductService.findAllPaged(pageRequest);
+        Page<ProductResponseBody> productsPage = iProductService.findAllPaged(pageRequest, request);
 
         return ResponseEntity.ok().body(productsPage);
     }
 
     @GetMapping("/{productId}")
-    public ResponseEntity<ProductResponseBody> findProductById(@PathVariable UUID productId) {
-        return ResponseEntity.ok(iProductService.findProductById(productId));
+    public ResponseEntity<ProductResponseBody> findProductById(@PathVariable UUID productId,
+                                                               HttpServletRequest request) {
+        return ResponseEntity.ok(iProductService.findProductById(productId, request));
     }
 
     @PutMapping("/{productId}")
     public ResponseEntity<ProductResponseBody> updateProduct(@PathVariable UUID productId,
-                                                             @Valid @RequestBody ProductRequestBody productRequestBody){
-        return ResponseEntity.ok(iProductService.updateProduct(productId, productRequestBody));
+                                                             @Valid @RequestBody ProductRequestBody productRequestBody,
+                                                             HttpServletRequest request){
+        return ResponseEntity.ok(iProductService.updateProduct(productId, productRequestBody, request));
     }
 
     @DeleteMapping("/{productId}")
-    public ResponseEntity<Void> deleteProduct(@PathVariable UUID productId){
-        iProductService.deleteProduct(productId);
+    public ResponseEntity<Void> deleteProduct(@PathVariable UUID productId,
+                                              HttpServletRequest request){
+        iProductService.deleteProduct(productId, request);
         return ResponseEntity.noContent().build();
     }
 
