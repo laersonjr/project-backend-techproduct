@@ -23,7 +23,7 @@ public class UserController {
     }
 
 
-    @PostMapping("/create")
+    @PostMapping
     public ResponseEntity<UserResponseBody> createUser(@Valid @RequestBody UserRequestBody userRequestBody){
         return ResponseEntity.status(HttpStatus.CREATED).body(iUserService.createUser(userRequestBody));
     }
