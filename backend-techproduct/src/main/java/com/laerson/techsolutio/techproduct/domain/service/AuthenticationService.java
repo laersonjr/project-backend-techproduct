@@ -2,6 +2,7 @@ package com.laerson.techsolutio.techproduct.domain.service;
 
 import com.laerson.techsolutio.techproduct.api.dto.UserAuthentication;
 import com.laerson.techsolutio.techproduct.api.dto.response.TokenResponseBody;
+import com.laerson.techsolutio.techproduct.core.security.exception.TokenInvalidException;
 import com.laerson.techsolutio.techproduct.core.security.exception.TokenNotFoundException;
 import com.laerson.techsolutio.techproduct.core.security.interfaces.ITokenProvide;
 import com.laerson.techsolutio.techproduct.domain.entity.User;
@@ -14,6 +15,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 @Service
 public class AuthenticationService implements IAuthenticationService {
@@ -21,6 +24,7 @@ public class AuthenticationService implements IAuthenticationService {
     private final ITokenProvide iTokenProvide;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final Set<String> invalidatedTokens = new HashSet<>();
 
     public AuthenticationService(ITokenProvide iTokenProvide, UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.iTokenProvide = iTokenProvide;
@@ -51,8 +55,22 @@ public class AuthenticationService implements IAuthenticationService {
     }
 
     @Override
-    public boolean validadTokenByRequest(HttpServletRequest request) {
-        return iTokenProvide.validateToken(getTokenByRequest(request));
+    public void validadTokenByRequest(HttpServletRequest request) {
+        String token = getTokenByRequest(request);
+        boolean isValidToken = iTokenProvide.validateToken(token);
+        if (!isValidToken || invalidatedTokens.contains(token)) {
+            throw new TokenInvalidException();
+        }
+    }
+
+    public void invalidateToken(String token) {
+        invalidatedTokens.add(token);
+    }
+
+    @Override
+    public void logout(HttpServletRequest request) {
+        validadTokenByRequest(request);
+        invalidateToken(getTokenByRequest(request));
     }
 
     private boolean validateUserExists(User userFound) {
