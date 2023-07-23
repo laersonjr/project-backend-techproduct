@@ -11,6 +11,9 @@ import io.jsonwebtoken.security.SignatureException;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.UUID;
 
@@ -54,12 +57,15 @@ public class TokenProvide implements ITokenProvide {
     }
 
     @Override
-    public Date getExpiryDateFromToken(String token) {
+    public OffsetDateTime getExpiryDateFromToken(String token) {
         Claims claims = Jwts.parser()
                 .setSigningKey(jwtSecret)
                 .parseClaimsJws(token)
                 .getBody();
-        return claims.getExpiration();
+
+        Date expirationDate = claims.getExpiration();
+        Instant instant = expirationDate.toInstant();
+        return instant.atZone(ZoneId.systemDefault()).toOffsetDateTime();
     }
 
     public int getJwtExpirationMs() {

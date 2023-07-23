@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.OffsetDateTime;
 import java.util.Date;
 
 @Getter
@@ -15,6 +16,6 @@ public class TokenResponseBody {
 
     private String token;
     private int expiresIn;
-    private Date expirationDate;
+    private OffsetDateTime expirationDate;
 
 }

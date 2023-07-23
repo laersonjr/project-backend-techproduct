@@ -14,6 +14,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.OffsetDateTime;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -48,7 +49,7 @@ public class AuthenticationService implements IAuthenticationService {
 
         String token = iTokenProvide.generateToken(login.getName());
         int expiresIn = iTokenProvide.getJwtExpirationMs();
-        Date expirationDate = iTokenProvide.getExpiryDateFromToken(token);
+        OffsetDateTime expirationDate = iTokenProvide.getExpiryDateFromToken(token);
 
 
         return new TokenResponseBody(token, expiresIn, expirationDate);
