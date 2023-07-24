@@ -5,6 +5,7 @@ import com.laerson.techsolutio.techproduct.core.security.exception.TokenNotFound
 import com.laerson.techsolutio.techproduct.domain.exception.IncorrectPasswordException;
 import com.laerson.techsolutio.techproduct.domain.exception.ProductNotFoundException;
 import com.laerson.techsolutio.techproduct.domain.exception.UserNotFoundException;
+import io.jsonwebtoken.MalformedJwtException;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpHeaders;
@@ -71,6 +72,13 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     private ResponseEntity<Object> handleTokenInvalidException(TokenInvalidException ex, WebRequest request){
         HttpStatus status = HttpStatus.UNAUTHORIZED;
         ErrorDetails errorDetails = getErrorDetail(status, ex.getMessage());
+        return handleExceptionInternal(ex, errorDetails, new HttpHeaders(), status, request);
+    }
+
+    @ExceptionHandler(MalformedJwtException.class)
+    private ResponseEntity<Object> handleMalformedJwtException(MalformedJwtException ex, WebRequest request){
+        HttpStatus status = HttpStatus.UNAUTHORIZED;
+        ErrorDetails errorDetails = getErrorDetail(status, messageSource.getMessage("token-invalid", null, LocaleContextHolder.getLocale()));
         return handleExceptionInternal(ex, errorDetails, new HttpHeaders(), status, request);
     }
 
