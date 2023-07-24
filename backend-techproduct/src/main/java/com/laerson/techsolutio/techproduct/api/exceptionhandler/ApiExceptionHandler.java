@@ -4,6 +4,7 @@ import com.laerson.techsolutio.techproduct.core.security.exception.TokenInvalidE
 import com.laerson.techsolutio.techproduct.core.security.exception.TokenNotFoundException;
 import com.laerson.techsolutio.techproduct.domain.exception.IncorrectPasswordException;
 import com.laerson.techsolutio.techproduct.domain.exception.ProductNotFoundException;
+import com.laerson.techsolutio.techproduct.domain.exception.UserAlreadyExistsException;
 import com.laerson.techsolutio.techproduct.domain.exception.UserNotFoundException;
 import io.jsonwebtoken.MalformedJwtException;
 import org.springframework.context.MessageSource;
@@ -57,6 +58,13 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(UserNotFoundException.class)
     private ResponseEntity<Object> handleUserNotFoundException(UserNotFoundException ex, WebRequest request){
         HttpStatus status = HttpStatus.NOT_FOUND;
+        ErrorDetails errorDetails = getErrorDetail(status, ex.getMessage());
+        return handleExceptionInternal(ex, errorDetails, new HttpHeaders(), status, request);
+    }
+
+    @ExceptionHandler(UserAlreadyExistsException.class)
+    private ResponseEntity<Object> handleUserAlreadyExistsException(UserAlreadyExistsException ex, WebRequest request){
+        HttpStatus status = HttpStatus.CONFLICT;
         ErrorDetails errorDetails = getErrorDetail(status, ex.getMessage());
         return handleExceptionInternal(ex, errorDetails, new HttpHeaders(), status, request);
     }

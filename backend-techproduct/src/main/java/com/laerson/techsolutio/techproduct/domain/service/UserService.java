@@ -4,6 +4,8 @@ import com.laerson.techsolutio.techproduct.api.dto.request.UserRequestBody;
 import com.laerson.techsolutio.techproduct.api.dto.response.UserResponseBody;
 import com.laerson.techsolutio.techproduct.core.modelmapper.interfaces.IModelMapperDTOConverter;
 import com.laerson.techsolutio.techproduct.domain.entity.User;
+import com.laerson.techsolutio.techproduct.domain.exception.UserAlreadyExistsException;
+import com.laerson.techsolutio.techproduct.domain.exception.UserNotFoundException;
 import com.laerson.techsolutio.techproduct.domain.repository.UserRepository;
 import com.laerson.techsolutio.techproduct.domain.service.interfaces.IUserService;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -26,6 +28,10 @@ public class UserService implements IUserService {
     @Override
     public UserResponseBody createUser(UserRequestBody userRequestBody) {
         User newUser = dtoConverter.convertToEntity(userRequestBody, User.class);
+        User userFound = userRepository.findByName(newUser.getName());
+        if (!(userFound==null)) {
+            throw new UserAlreadyExistsException();
+        }
         newUser.setRandomId();
         newUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
         userRepository.save(newUser);
