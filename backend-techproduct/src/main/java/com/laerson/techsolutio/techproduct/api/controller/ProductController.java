@@ -2,9 +2,12 @@ package com.laerson.techsolutio.techproduct.api.controller;
 
 import com.laerson.techsolutio.techproduct.api.dto.request.ProductRequestBody;
 import com.laerson.techsolutio.techproduct.api.dto.response.ProductResponseBody;
+import com.laerson.techsolutio.techproduct.domain.event.ResourceCreatedEvent;
 import com.laerson.techsolutio.techproduct.domain.service.interfaces.IProductService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -19,17 +22,22 @@ import java.util.UUID;
 public class ProductController {
 
     private final IProductService iProductService;
+    private final ApplicationEventPublisher publisher;
 
-    public ProductController(IProductService iProductService) {
+    public ProductController(IProductService iProductService, ApplicationEventPublisher publisher) {
         this.iProductService = iProductService;
+        this.publisher = publisher;
     }
 
     @PostMapping
     public ResponseEntity<ProductResponseBody> createProduct(@Valid @RequestBody ProductRequestBody productRequestBody,
-                                                             HttpServletRequest request) {
+                                                             HttpServletRequest request, HttpServletResponse response) {
+        ProductResponseBody responseBody = iProductService.createProduct(productRequestBody, request);
+        publisher.publishEvent(new ResourceCreatedEvent(this, response, responseBody.getId()));
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(iProductService.createProduct(productRequestBody, request));
+                .body(responseBody);
     }
+
 
     @GetMapping
     public ResponseEntity<Page<ProductResponseBody>> findAll(
